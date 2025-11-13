@@ -1,43 +1,92 @@
-version: "3.9"
+# ==========================================
+#         DOCKER COMPOSE - EXPLICADO
+# ==========================================
+
+version: '3.8'  # Versión de Docker Compose que usamos
+
+# ==========================================
+#              SERVICIOS
+# ==========================================
+# Un servicio = un contenedor
 
 services:
-  nginx:
-    build: requirements/nginx/.
-    container_name: nginx
-    ports:
-      - "443:443"
-    depends_on:
-      - wordpress
-    networks:
-      - inception
-    volumes:
-      - wordpress_data:/var/www/html
-    restart: always
 
-  wordpress:
-    build: requirements/nginx/.
-    container_name: wordpress
-    depends_on:
-      - mariadb
-    networks:
-      - inception
-    volumes:
-      - wordpress_data:/var/www/html
-    restart: always
-
+  # ------ SERVICIO 1: MARIADB (Base de datos) ------
   mariadb:
-    build: requirements/mariadb
-    container_name: mariadb
+    container_name: mariadb          # Nombre del contenedor
+    build:
+      context: ./requirements/mariadb  # Dónde está el Dockerfile
+      dockerfile: Dockerfile           # Nombre del Dockerfile
+    image: mariadb                   # Nombre de la imagen que se crea
+    env_file:
+      - .env                         # Lee variables del .env
+    volumes:
+      - mariadb_data:/var/lib/mysql  # Guarda datos aquí (persisten)
+    networks:
+      - inception                    # Red para que se comuniquen
+    restart: unless-stopped          # Se reinicia si crashea
+
+  # ------ SERVICIO 2: WORDPRESS (Aplicación) ------
+  wordpress:
+    container_name: wordpress
+    build:
+      context: ./requirements/wordpress
+      dockerfile: Dockerfile
+    image: wordpress
+    env_file:
+      - .env
+    volumes:
+      - wordpress_data:/var/www/html  # Archivos de WordPress
     networks:
       - inception
-    volumes: 
-    - mariadb_data:/var/lib/mysql
-    restart: always
+    depends_on:
+      - mariadb                      # Espera a que MariaDB esté listo
+    restart: unless-stopped
+
+  # ------ SERVICIO 3: NGINX (Servidor web) ------
+  nginx:
+    container_name: nginx
+    build:
+      context: ./requirements/nginx
+      dockerfile: Dockerfile
+    image: nginx
+    env_file:
+      - .env
+    volumes:
+      - wordpress_data:/var/www/html  # Accede a los archivos de WP
+    networks:
+      - inception
+    depends_on:
+      - wordpress                    # Espera a WordPress
+    ports:
+      - "443:443"                    # Puerto HTTPS (único punto de entrada)
+    restart: unless-stopped
+
+# ==========================================
+#              VOLÚMENES
+# ==========================================
+# Los volúmenes son "discos duros" que persisten datos
 
 volumes:
   wordpress_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/${USER}/data/wordpress  # Carpeta en tu máquina
+
   mariadb_data:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/${USER}/data/mariadb
+
+# ==========================================
+#              REDES
+# ==========================================
+# La red permite que los contenedores se hablen entre sí
 
 networks:
   inception:
-    driver: bridge
+    driver: bridge  # Tipo de red (bridge = puente)
