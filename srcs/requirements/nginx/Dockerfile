@@ -13,7 +13,7 @@ RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
     -subj "/C=ES/ST=Madrid/L=Madrid/O=42Madrid/CN=miaviles.42.fr"
 
 COPY conf/nginx.conf /etc/nginx/nginx.conf
-COPY conf/default.conf /etc/nginx/sites-available/default
+COPY conf/default.conf /etc/nginx/sites-enabled/default
 
 RUN mkdir -p /var/www/html && \
     chown -R www-data:www-data /var/www/html && \
