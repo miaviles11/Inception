@@ -22,6 +22,7 @@ services:
       - .env                         # Lee variables del .env
     volumes:
       - mariadb_data:/var/lib/mysql  # Guarda datos aquí (persisten)
+      - /home/${USER}/data/mysql_log:/var/log/mysql
     networks:
       - inception                    # Red para que se comuniquen
     restart: unless-stopped          # Se reinicia si crashea

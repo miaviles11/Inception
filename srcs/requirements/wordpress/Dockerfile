@@ -1,28 +1,27 @@
 FROM debian:bookworm
 
 RUN apt-get update && apt-get install -y \
-    php8.1-fpm \
-    php8.1-mysql \
-    php8.1-curl \
-    php8.1-gd \
-    php8.1-intl \
-    php8.1-mbstring \
-    php8.1-soap \
-    php8.1-xml \
-    php8.1-xmlrpc \
-    php8.1-zip \
+    php8.2-fpm \
+    php8.2-mysql \
+    php8.2-curl \
+    php8.2-gd \
+    php8.2-intl \
+    php8.2-mbstring \
+    php8.2-soap \
+    php8.2-xml \
+    php8.2-xmlrpc \
+    php8.2-zip \
     curl \
     mariadb-client \
     && rm -rf /var/lib/apt/lists/*
 
 # WP-CLI
-RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && \
-    chmod +x wp-cli.phar && \
-    mv wp-cli.phar /usr/local/bin/wp
+RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
+    && chmod +x wp-cli.phar && mv wp-cli.phar /usr/local/bin/wp
 
-# Ajusta php-fpm para escuchar en 9000 (si usas socket cambia)
+# php-fpm listen on 9000
 RUN mkdir -p /run/php && \
-    sed -i 's/listen = .*$/listen = 9000/' /etc/php/8.1/fpm/pool.d/www.conf
+    sed -i 's|listen = .*|listen = 9000|' /etc/php/8.2/fpm/pool.d/www.conf
 
 WORKDIR /var/www/html
 
