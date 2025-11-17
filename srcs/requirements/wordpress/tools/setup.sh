@@ -49,4 +49,4 @@ fi
 chown -R www-data:www-data /var/www/html
 chmod -R 755 /var/www/html
 
-exec php-fpm7.4 -F
+exec php-fpm8.1 -F
