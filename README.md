@@ -610,7 +610,7 @@ Los datos se guardan en:
 **Miguel Avilés**
 - 42 Login: `miaviles`
 - Proyecto: Inception (42 Madrid)
-- Fecha: Noviembre 2024
+- Fecha: Noviembre 2025
 
 ---
 
