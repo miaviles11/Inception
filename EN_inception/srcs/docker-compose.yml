@@ -209,7 +209,7 @@ services:
     container_name: portainer
     
     # Official Portainer Community Edition image
-    image: portainer/portainer-ce:2.19.4
+    image: portainer/portainer-ce:2.11.1
     
     # Required volumes
     volumes:
